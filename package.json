@@ -1,0 +1,16 @@
+{
+  "name": "twitter_countdown",
+  "version": "0.1.0",
+  "description": "Tells you how many tweets you need to reach a target",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "@alex_tea",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "express": "^4.14.0",
+    "node-twitter-api": "^1.8.0"
+  }
+}
