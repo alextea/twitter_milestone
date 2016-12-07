@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var inspect = require('util-inspect');
 var twitterAPI = require('node-twitter-api');
+var request = require('request');
 var nunjucks = require('nunjucks');
 
 var app = express();
@@ -24,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(logger({ path: "log/express.log"}));
 app.use(cookieParser());
-app.use(session({ secret: "very secret", resave: false, saveUninitialized: true}));
+app.use(session({ secret: Math.round(Math.random() * 100000).toString(), resave: false, saveUninitialized: true}));
 
 app.use(function(req, res, next) {
   res.locals.session = req.session;
@@ -42,11 +43,24 @@ var twitter = new twitterAPI({
 var _requestSecret;
 
 app.get("/", function(req, res) {
-  res.render("index.html");
+  res.render('index.html');
 });
 
-app.get("/response", function(req, res) {
-  res.render("response.html");
+app.get('/reponse', function(req, res){
+  var url = "http://localhost:8000/access-token?";
+  url += "oauth_token=" + req.query.oauth_token;
+  url += "&oauth_verifier=" + req.query.oauth_verifier;
+
+  var user = {};
+
+  console.log(url);
+
+   // request module is used to process the twitter url and return the results in JSON format
+   request(url, function(err, resp, body) {
+     user = JSON.parse(body);
+     console.log(user);
+     res.render('response.html', { user: user });
+   });
 });
 
 app.get("/request-token", function(req, res) {
@@ -55,7 +69,7 @@ app.get("/request-token", function(req, res) {
     res.status(500).send(err);
     else {
       _requestSecret = requestSecret;
-      res.redirect("https://api.twitter.com/oauth/authenticate?oauth_token=" + requestToken);
+      res.redirect(twitter.getAuthUrl(requestToken));
     }
   });
 });

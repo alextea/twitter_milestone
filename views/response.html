@@ -2,15 +2,9 @@
 
 <html>
 <head>
-  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-  <script>
-  $(function() {
-    $.get("/access-token" + location.search).done(function(user) {
-      // Do something with your signed in user&#39;s information here.
-      console.log(user);
-    });
-  });
-  </script>
 </head>
-<body></body>
+<body>
+  <h1>{{ user.name }}</h1>
+  <h2>@{{ user.screen_name }}</h2>
+</body>
 </html>
