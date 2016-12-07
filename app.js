@@ -5,11 +5,18 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var inspect = require('util-inspect');
 var twitterAPI = require('node-twitter-api');
-var engines = require('consolidate');
+var nunjucks = require('nunjucks');
 
 var app = express();
 
 var secret = require("./secret.json");
+// Set up App
+nunjucks.configure(__dirname + '/views/', {
+  autoescape: true,
+  express: app,
+  noCache: true,
+  watch: true
+})
 
 var twitter = new twitterAPI({
     consumerKey:    secret.twitter.consumerKey,
@@ -17,9 +24,8 @@ var twitter = new twitterAPI({
     callback: 'http://localhost:8000/response'
 });
 
-app.set('views', __dirname + '/views');
-app.engine('html', engines.nunjucks);
-app.set('view engine', 'nunjucks');
+// Set views engine
+app.set('view engine', 'nunjucks')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
