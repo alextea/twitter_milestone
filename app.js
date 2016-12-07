@@ -61,16 +61,18 @@ app.get('/response', function(req, res){
   verifier = req.query.oauth_verifier;
 
   twitter.getAccessToken(requestToken, _requestSecret, verifier, function(err, accessToken, accessSecret) {
-    if (err)
-    res.status(500).send(err);
-    else
-    twitter.verifyCredentials(accessToken, accessSecret, function(err, user) {
-      if (err)
+    if (err) {
       res.status(500).send(err);
-      else
-      req.session.user = user;
-      res.redirect('/info');
-    });
+    } else {
+      twitter.verifyCredentials(accessToken, accessSecret, function(err, user) {
+        if (err) {
+          res.status(500).send(err);
+        } else {
+          req.session.user = user;
+          res.redirect('/info');
+        }
+      });
+    }
   });
 });
 
