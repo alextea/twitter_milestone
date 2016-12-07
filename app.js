@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var inspect = require('util-inspect');
 var twitterAPI = require('node-twitter-api');
-var request = require('request');
 var nunjucks = require('nunjucks');
 
 var app = express();
@@ -46,35 +45,7 @@ app.get("/", function(req, res) {
   res.render('index.html');
 });
 
-app.get('/reponse', function(req, res){
-  var url = "http://localhost:8000/access-token?";
-  url += "oauth_token=" + req.query.oauth_token;
-  url += "&oauth_verifier=" + req.query.oauth_verifier;
-
-  var user = {};
-
-  console.log(url);
-
-   // request module is used to process the twitter url and return the results in JSON format
-   request(url, function(err, resp, body) {
-     user = JSON.parse(body);
-     console.log(user);
-     res.render('response.html', { user: user });
-   });
-});
-
-app.get("/request-token", function(req, res) {
-  twitter.getRequestToken(function(err, requestToken, requestSecret) {
-    if (err)
-    res.status(500).send(err);
-    else {
-      _requestSecret = requestSecret;
-      res.redirect(twitter.getAuthUrl(requestToken));
-    }
-  });
-});
-
-app.get("/access-token", function(req, res) {
+app.get('/response', function(req, res){
   var requestToken = req.query.oauth_token,
   verifier = req.query.oauth_verifier;
 
@@ -86,8 +57,19 @@ app.get("/access-token", function(req, res) {
       if (err)
       res.status(500).send(err);
       else
-      res.send(user);
+      res.render('response.html', { user: user });
     });
+  });
+});
+
+app.get("/request-token", function(req, res) {
+  twitter.getRequestToken(function(err, requestToken, requestSecret) {
+    if (err)
+    res.status(500).send(err);
+    else {
+      _requestSecret = requestSecret;
+      res.redirect(twitter.getAuthUrl(requestToken));
+    }
   });
 });
 
