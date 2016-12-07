@@ -68,9 +68,14 @@ app.get('/response', function(req, res){
       if (err)
       res.status(500).send(err);
       else
-      res.render('response.html', { user: user });
+      req.session.user = user;
+      res.redirect('/info');
     });
   });
+});
+
+app.get('/info', function(req, res){
+  res.render('info.html', { user: req.session.user });
 });
 
 app.listen(8000, function() {
