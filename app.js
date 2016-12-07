@@ -9,7 +9,6 @@ var nunjucks = require('nunjucks');
 
 var app = express();
 
-var secret = require("./secret.json");
 // Set up App
 nunjucks.configure(__dirname + '/views/', {
   autoescape: true,
@@ -17,12 +16,6 @@ nunjucks.configure(__dirname + '/views/', {
   noCache: true,
   watch: true
 })
-
-var twitter = new twitterAPI({
-    consumerKey:    secret.twitter.consumerKey,
-    consumerSecret: secret.twitter.consumerSecret,
-    callback: 'http://localhost:8000/response'
-});
 
 // Set views engine
 app.set('view engine', 'nunjucks')
@@ -36,6 +29,14 @@ app.use(session({ secret: "very secret", resave: false, saveUninitialized: true}
 app.use(function(req, res, next) {
   res.locals.session = req.session;
   next();
+});
+
+var secret = require("./secret.json");
+
+var twitter = new twitterAPI({
+    consumerKey:    secret.twitter.consumerKey,
+    consumerSecret: secret.twitter.consumerSecret,
+    callback: 'http://localhost:8000/response'
 });
 
 var _requestSecret;
@@ -77,5 +78,5 @@ app.get("/access-token", function(req, res) {
 });
 
 app.listen(8000, function() {
-  console.log('App runining on port 8000!');
+  console.log('App running on port 8000!');
 });
