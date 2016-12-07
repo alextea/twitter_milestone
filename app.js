@@ -45,6 +45,17 @@ app.get("/", function(req, res) {
   res.render('index.html');
 });
 
+app.get("/request-token", function(req, res) {
+  twitter.getRequestToken(function(err, requestToken, requestSecret) {
+    if (err)
+    res.status(500).send(err);
+    else {
+      _requestSecret = requestSecret;
+      res.redirect(twitter.getAuthUrl(requestToken));
+    }
+  });
+});
+
 app.get('/response', function(req, res){
   var requestToken = req.query.oauth_token,
   verifier = req.query.oauth_verifier;
@@ -59,17 +70,6 @@ app.get('/response', function(req, res){
       else
       res.render('response.html', { user: user });
     });
-  });
-});
-
-app.get("/request-token", function(req, res) {
-  twitter.getRequestToken(function(err, requestToken, requestSecret) {
-    if (err)
-    res.status(500).send(err);
-    else {
-      _requestSecret = requestSecret;
-      res.redirect(twitter.getAuthUrl(requestToken));
-    }
   });
 });
 
