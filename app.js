@@ -6,6 +6,7 @@ var session = require('express-session');
 var inspect = require('util-inspect');
 var twitterAPI = require('node-twitter-api');
 var nunjucks = require('nunjucks');
+var moment = require('moment');
 
 var app = express();
 
@@ -42,7 +43,12 @@ var twitter = new twitterAPI({
 var _requestSecret;
 
 app.get("/", function(req, res) {
-  res.render('index.html');
+  console.log(req.session.user);
+  if (req.session.user != undefined) {
+    res.redirect('/info');
+  } else {
+    res.render('index.html');
+  }
 });
 
 app.get("/request-token", function(req, res) {
@@ -77,7 +83,29 @@ app.get('/response', function(req, res){
 });
 
 app.get('/info', function(req, res){
-  res.render('info.html', { user: req.session.user });
+  console.log(JSON.stringify(req.session.user, null, "  "));
+  console.log(req.session.user.created_at);
+
+  var now = moment();
+  var date_created = moment(req.session.user.created_at);
+  console.log(now, date_created);
+
+  var years = now.diff(date_created, 'year');
+  date_created.add(years, 'years');
+
+  var months = now.diff(date_created, 'months');
+  date_created.add(months, 'months');
+
+  var days = now.diff(date_created, 'days');
+
+  var age = years + ' years ' + months + ' months ' + days + ' days';
+
+  var data = {
+    user: req.session.user,
+    age: age
+  }
+
+  res.render('info.html', data);
 });
 
 app.listen(8000, function() {
