@@ -43,7 +43,6 @@ var twitter = new twitterAPI({
 var _requestSecret;
 
 app.get("/", function(req, res) {
-  console.log(req.session.user);
   if (req.session.user != undefined) {
     res.redirect('/info');
   } else {
@@ -84,29 +83,102 @@ app.get('/response', function(req, res){
 
 app.get('/info', function(req, res){
   console.log(JSON.stringify(req.session.user, null, "  "));
-  console.log(req.session.user.created_at);
+  console.log("created_at: "+req.session.user.created_at);
 
   var now = moment();
-  var date_created = moment(req.session.user.created_at);
-  console.log(now, date_created);
+  var created_at = req.session.user.created_at.split(" ");
+  var date_created = moment(created_at[2]+" "+created_at[1]+" "+created_at[5], "DD MMM YYYY");
+  console.log("date_created: "+date_created.format());
+  console.log("now: "+now.format());
 
-  var years = now.diff(date_created, 'year');
-  date_created.add(years, 'years');
+  console.log("from now: "+date_created.fromNow());
 
-  var months = now.diff(date_created, 'months');
-  date_created.add(months, 'months');
+  var age = getDateDifference(now, date_created);
 
-  var days = now.diff(date_created, 'days');
-
-  var age = years + ' years ' + months + ' months ' + days + ' days';
+  var nextAnniversary = getDateDifference(now, getNextOccurance(date_created));
+  console.log("nextAnniversary: "+nextAnniversary);
 
   var data = {
     user: req.session.user,
-    age: age
+    age: age,
+    nextAnniversary: nextAnniversary
   }
 
   res.render('info.html', data);
 });
+
+var getNextOccurance = function(date) {
+  var now = moment();
+  var input = moment(date);
+  var output = moment(input).year(now.year());
+
+  if (input.month() < now.month()) {
+    // next year
+    output.year(now.year() + 1);
+  } else if (input.month() > now.month()) {
+    // do nothing
+  } else if (input.month() == now.month()) {
+    if (input.day() < now.day()) {
+      // next year
+      output.year(now.year() + 1);
+    } else if (input.day() >= now.day()) {
+      // do nothing
+    }
+  }
+
+  console.log("next occurance: " + output.format());
+  return output;
+}
+
+var getDateDifference = function(date1, date2) {
+  var date1 = moment(date1), date2 = moment(date2);
+
+  var years = date1.diff(date2, 'year');
+  date2.add(years, 'years');
+
+  var months = date1.diff(date2, 'months');
+  date2.add(months, 'months');
+
+  var days = date1.diff(date2, 'days');
+
+  years = Math.abs(years);
+  months = Math.abs(months);
+  days = Math.abs(days);
+
+  var string = "";
+  if (years > 0) {
+    string += years + ' year';
+    if (years > 1) {
+      string += 's';
+    }
+  }
+
+  if (months > 0) {
+    if (years > 0) {
+      if (days > 0) {
+        string += ', ';
+      } else {
+        string += ' and ';
+      }
+    }
+    string += months + ' month';
+    if (months > 1) {
+      string += 's';
+    }
+  }
+
+  if (days > 0) {
+    if (years > 0 || months > 0) {
+      string += ' and ';
+    }
+    string += days + ' day';
+    if (days > 1) {
+      string += 's';
+    }
+  }
+
+  return string;
+}
 
 app.listen(8000, function() {
   console.log('App running on port 8000!');
