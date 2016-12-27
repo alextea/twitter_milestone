@@ -87,19 +87,27 @@ app.get('/info', function(req, res){
   var date_created = moment(created_at[2]+" "+created_at[1]+" "+created_at[5], "DD MMM YYYY");
 
   var age = getDateDifference(now, date_created);
-
-  var nextAnniversary = getDateDifference(now, getNextOccurance(date_created));
+  var ageDays = now.diff(date_created, 'days');
+  var nextAnniversary = getNextOccurance(date_created);
+  var nextAnniversaryString = getDateDifference(now, nextAnniversary);
+  var anniversaryDays = Math.abs(now.diff(nextAnniversary, 'days'));
 
   var tweetCount = req.session.user.statuses_count;
+  var averageTweets = (tweetCount / ageDays).toFixed(2);
 
-  var averageTweets = (tweetCount / now.diff(date_created, 'days')).toFixed(2);
-
+  var nextMilestone = getNextMilestone(tweetCount);
+  var tweetDifference = nextMilestone - tweetCount;
+  var tweetTimes = Math.ceil(tweetDifference / anniversaryDays);
+  
   var data = {
     user: req.session.user,
     age: age,
-    nextAnniversary: nextAnniversary,
+    nextAnniversary: nextAnniversaryString,
     tweetCount: tweetCount,
-    averageTweets: averageTweets
+    averageTweets: averageTweets,
+    nextMilestone: nextMilestone,
+    tweetDifference: tweetDifference,
+    tweetTimes: tweetTimes
   }
 
   res.render('info.html', data);
@@ -174,6 +182,20 @@ var getDateDifference = function(date1, date2) {
   }
 
   return string;
+}
+
+var getNextMilestone = function(n, y=0) {
+  var x = String(n).length;
+  if (y==0) {
+    var y = "1";
+    while (y.length < x) {
+      y += "0";
+    }
+  }
+
+  z = Math.ceil(n/y) * y;
+
+  return z;
 }
 
 app.listen(8000, function() {
