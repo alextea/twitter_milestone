@@ -82,26 +82,24 @@ app.get('/response', function(req, res){
 });
 
 app.get('/info', function(req, res){
-  console.log(JSON.stringify(req.session.user, null, "  "));
-  console.log("created_at: "+req.session.user.created_at);
-
   var now = moment();
   var created_at = req.session.user.created_at.split(" ");
   var date_created = moment(created_at[2]+" "+created_at[1]+" "+created_at[5], "DD MMM YYYY");
-  console.log("date_created: "+date_created.format());
-  console.log("now: "+now.format());
-
-  console.log("from now: "+date_created.fromNow());
 
   var age = getDateDifference(now, date_created);
 
   var nextAnniversary = getDateDifference(now, getNextOccurance(date_created));
-  console.log("nextAnniversary: "+nextAnniversary);
+
+  var tweetCount = req.session.user.statuses_count;
+
+  var averageTweets = (tweetCount / now.diff(date_created, 'days')).toFixed(2);
 
   var data = {
     user: req.session.user,
     age: age,
-    nextAnniversary: nextAnniversary
+    nextAnniversary: nextAnniversary,
+    tweetCount: tweetCount,
+    averageTweets: averageTweets
   }
 
   res.render('info.html', data);
@@ -125,8 +123,6 @@ var getNextOccurance = function(date) {
       // do nothing
     }
   }
-
-  console.log("next occurance: " + output.format());
   return output;
 }
 
