@@ -37,49 +37,11 @@ var secret = require("./secret.json");
 var twitter = new twitterAPI({
     consumer_key:    secret.twitter.consumerKey,
     consumer_secret: secret.twitter.consumerSecret,
-    bearer_token:    secret.twitter.bearerToken,
-    callback: 'http://localhost:8000/response'
+    bearer_token:    secret.twitter.bearerToken
 });
-
-var _requestSecret;
 
 app.get("/", function(req, res) {
-  if (req.session.user != undefined) {
-    res.redirect('/info');
-  } else {
-    res.render('index.html');
-  }
-});
-
-app.get("/request-token", function(req, res) {
-  twitter.getRequestToken(function(err, requestToken, requestSecret) {
-    if (err)
-    res.status(500).send(err);
-    else {
-      _requestSecret = requestSecret;
-      res.redirect(twitter.getAuthUrl(requestToken));
-    }
-  });
-});
-
-app.get('/response', function(req, res){
-  var requestToken = req.query.oauth_token,
-  verifier = req.query.oauth_verifier;
-
-  twitter.getAccessToken(requestToken, _requestSecret, verifier, function(err, accessToken, accessSecret) {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      twitter.verifyCredentials(accessToken, accessSecret, function(err, user) {
-        if (err) {
-          res.status(500).send(err);
-        } else {
-          req.session.user = user;
-          res.redirect('/info');
-        }
-      });
-    }
-  });
+  res.render('index.html');
 });
 
 app.get('/info(/:username)?', function(req, res) {

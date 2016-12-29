@@ -3,13 +3,6 @@
 <html>
 <head>
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-  <script>
-  $(function() {
-    $("#sign-in-with-twitter").on("click", function() {
-      window.location.href = "/request-token";
-    });
-  });
-  </script>
 </head>
 <body>
   <h1>Oops there was a problem</h1>
@@ -25,13 +18,13 @@
     <button type="submit">Get countdown</button>
   </form>
 
-  <button id="sign-in-with-twitter">Sign in with Twitter!</button>
-
   <script type="text/javascript">
+  $(function() {
     $('#form-get-info').on('submit', function(e) {
       e.preventDefault();
       window.location = '/info/'+this[0].value;
     });
+  });
   </script>
 </body>
 </html>
