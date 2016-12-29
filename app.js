@@ -86,8 +86,12 @@ app.get('/info(/:username)?', function(req, res) {
   if (req.params.username == undefined) {
     if (req.query.username != undefined) {
       res.redirect('/info/'+req.query.username);
+      return;
     } else {
       // error page
+      var error = "You need to specify a username";
+      res.render('error.html', { error: error });
+      return;
     }
   }
 
@@ -95,8 +99,6 @@ app.get('/info(/:username)?', function(req, res) {
 
   twitter.get('users/show', params, function(error, user, response) {
     if (!error) {
-      // console.log(user);
-
       var now = moment();
       var created_at = user.created_at.split(" ");
       var date_created = moment(created_at[2]+" "+created_at[1]+" "+created_at[5], "DD MMM YYYY");
@@ -128,7 +130,7 @@ app.get('/info(/:username)?', function(req, res) {
       res.render('info.html', data);
     } else {
       // console.log(error);
-      // console.log(response);
+      res.render('error.html', { error: error[0].message });
     }
   });
 });
