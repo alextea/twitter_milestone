@@ -4,7 +4,7 @@ var logger = require('express-logger');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var inspect = require('util-inspect');
-var twitterAPI = require('node-twitter-api');
+var twitterAPI = require('twitter');
 var nunjucks = require('nunjucks');
 var moment = require('moment');
 
@@ -35,8 +35,9 @@ app.use(function(req, res, next) {
 var secret = require("./secret.json");
 
 var twitter = new twitterAPI({
-    consumerKey:    secret.twitter.consumerKey,
-    consumerSecret: secret.twitter.consumerSecret,
+    consumer_key:    secret.twitter.consumerKey,
+    consumer_secret: secret.twitter.consumerSecret,
+    bearer_token:    secret.twitter.bearerToken,
     callback: 'http://localhost:8000/response'
 });
 
@@ -81,36 +82,55 @@ app.get('/response', function(req, res){
   });
 });
 
-app.get('/info', function(req, res){
-  var now = moment();
-  var created_at = req.session.user.created_at.split(" ");
-  var date_created = moment(created_at[2]+" "+created_at[1]+" "+created_at[5], "DD MMM YYYY");
-
-  var age = getDateDifference(now, date_created);
-  var ageDays = now.diff(date_created, 'days');
-  var nextAnniversary = getNextOccurance(date_created);
-  var nextAnniversaryString = getDateDifference(now, nextAnniversary);
-  var anniversaryDays = Math.abs(now.diff(nextAnniversary, 'days'));
-
-  var tweetCount = req.session.user.statuses_count;
-  var averageTweets = (tweetCount / ageDays).toFixed(2);
-
-  var nextMilestone = getNextMilestone(tweetCount);
-  var tweetDifference = nextMilestone - tweetCount;
-  var tweetTimes = Math.ceil(tweetDifference / anniversaryDays);
-  
-  var data = {
-    user: req.session.user,
-    age: age,
-    nextAnniversary: nextAnniversaryString,
-    tweetCount: tweetCount,
-    averageTweets: averageTweets,
-    nextMilestone: nextMilestone,
-    tweetDifference: tweetDifference,
-    tweetTimes: tweetTimes
+app.get('/info(/:username)?', function(req, res) {
+  if (req.params.username == undefined) {
+    if (req.query.username != undefined) {
+      res.redirect('/info/'+req.query.username);
+    } else {
+      // error page
+    }
   }
 
-  res.render('info.html', data);
+  var params = { screen_name: req.params.username };
+
+  twitter.get('users/show', params, function(error, user, response) {
+    if (!error) {
+      // console.log(user);
+
+      var now = moment();
+      var created_at = user.created_at.split(" ");
+      var date_created = moment(created_at[2]+" "+created_at[1]+" "+created_at[5], "DD MMM YYYY");
+
+      var age = getDateDifference(now, date_created);
+      var ageDays = now.diff(date_created, 'days');
+      var nextAnniversary = getNextOccurance(date_created);
+      var nextAnniversaryString = getDateDifference(now, nextAnniversary);
+      var anniversaryDays = Math.abs(now.diff(nextAnniversary, 'days'));
+
+      var tweetCount = user.statuses_count;
+      var averageTweets = (tweetCount / ageDays).toFixed(2);
+
+      var nextMilestone = getNextMilestone(tweetCount);
+      var tweetDifference = nextMilestone - tweetCount;
+      var tweetTimes = Math.ceil(tweetDifference / anniversaryDays);
+
+      var data = {
+        user: user,
+        age: age,
+        nextAnniversary: nextAnniversaryString,
+        tweetCount: tweetCount,
+        averageTweets: averageTweets,
+        nextMilestone: nextMilestone,
+        tweetDifference: tweetDifference,
+        tweetTimes: tweetTimes
+      }
+
+      res.render('info.html', data);
+    } else {
+      // console.log(error);
+      // console.log(response);
+    }
+  });
 });
 
 var getNextOccurance = function(date) {
