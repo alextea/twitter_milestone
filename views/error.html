@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+{% extends "layout.html" %}
 
-<html>
-<head>
-  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-</head>
-<body>
-  <h1>Oops there was a problem</h1>
+{% block title %}Oops there was a problem{% endblock %}
 
+{% block page_header %}
+<h1>Oops there was a problem</h1>
+{% endblock %}
+
+{% block content %}
   <p>{{ error }}</p>
 
   <form class="" action="/info" method="get" id="form-get-info">
@@ -17,14 +17,6 @@
 
     <button type="submit">Get countdown</button>
   </form>
+{% endblock %}
 
-  <script type="text/javascript">
-  $(function() {
-    $('#form-get-info').on('submit', function(e) {
-      e.preventDefault();
-      window.location = '/info/'+this[0].value;
-    });
-  });
-  </script>
-</body>
-</html>
+{% block scripts %}{% include "includes/_form-script.html" %}{% endblock %}

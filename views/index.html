@@ -1,26 +1,20 @@
-<!DOCTYPE html>
+{% extends "layout.html" %}
 
-<html>
-<head>
-  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-</head>
-<body>
-  <form class="" action="/info" method="get" id="form-get-info">
-    <label for="input-username">
-      Twitter username
-      <input type="text" name="username" value="" id="input-username">
-    </label>
+{% block title %}Twitter Milestone{% endblock %}
 
-    <button type="submit">Get countdown</button>
-  </form>
+{% block page_header %}
+<h1>Twitter Milestone</h1>
+{% endblock %}
 
-  <script type="text/javascript">
-  $(function() {
-    $('#form-get-info').on('submit', function(e) {
-      e.preventDefault();
-      window.location = '/info/'+this[0].value;
-    });
-  });
-  </script>
-</body>
-</html>
+{% block content %}
+<form class="" action="/info" method="get" id="form-get-info">
+  <label for="input-username">
+    Twitter username
+    <input type="text" name="username" value="" id="input-username">
+  </label>
+
+  <button type="submit">Get countdown</button>
+</form>
+{% endblock %}
+
+{% block scripts %}{% include "includes/_form-script.html" %}{% endblock %}

@@ -1,12 +1,13 @@
-<!DOCTYPE html>
+{% extends "layout.html" %}
 
-<html>
-<head>
-</head>
-<body>
-  <h1>{{ user.name }}</h1>
-  <h2>@{{ user.screen_name }}</h2>
+{% block title %}{{user.name}}'s Twitter Milestone{% endblock %}
 
+{% block page_header %}
+<h1>{{ user.name }}</h1>
+<h2>@{{ user.screen_name }}</h2>
+{% endblock %}
+
+{% block content %}
   <p>You have been on Twitter for {{ age }}</p>
 
   <p>You've tweeted {{ tweetCount }} times. An average of {{ averageTweets }} tweets a day</p>
@@ -16,6 +17,4 @@
   <p>Your next tweet milestone is {{ nextMilestone }} tweets which is {{ tweetDifference }} tweets away</p>
 
   <p>You will need to tweet at least {{ tweetTimes }} times a day to reach it by your next anniversary</p>
-
-</body>
-</html>
+{% endblock %}
