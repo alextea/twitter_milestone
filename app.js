@@ -7,6 +7,8 @@ var inspect = require('util-inspect');
 var twitterAPI = require('twitter');
 var nunjucks = require('nunjucks');
 var moment = require('moment');
+var sass = require('node-sass-middleware');
+var path = require('path');
 
 var app = express();
 
@@ -16,21 +18,34 @@ nunjucks.configure(__dirname + '/views/', {
   express: app,
   noCache: true,
   watch: true
-})
+});
 
-// Set views engine
-app.set('view engine', 'nunjucks')
-
+app.set('view engine', 'nunjucks');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(logger({ path: "log/express.log"}));
 app.use(cookieParser());
 app.use(session({ secret: Math.round(Math.random() * 100000).toString(), resave: false, saveUninitialized: true}));
-
 app.use(function(req, res, next) {
   res.locals.session = req.session;
   next();
 });
+
+var srcPath = __dirname + '/sass';
+var destPath = __dirname + '/public/css';
+
+// adding the sass middleware
+app.use(
+  sass({
+    src: srcPath,
+    dest: destPath,
+    debug: true,
+    prefix: '/css'
+  })
+);
+
+// The static middleware must come after the sass middleware
+app.use(express.static( path.join( __dirname, 'public' ) ) );
 
 var secret = require("./secret.json");
 
@@ -184,4 +199,6 @@ var getNextMilestone = function(n, y=0) {
 
 app.listen(8000, function() {
   console.log('App running on port 8000!');
+  console.log('srcPath is: '+srcPath);
+  console.log('destPath is: '+destPath);
 });
