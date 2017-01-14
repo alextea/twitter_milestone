@@ -200,13 +200,13 @@ var getNextMilestone = function(n, y=0) {
   return z;
 }
 
-var env = new nunjucks.Environment();
+var nunjucksEnv = new nunjucks.Environment();
 
-env.addFilter('formatNumber', function(n) {
+nunjucksEnv.addFilter('formatNumber', function(n) {
   return n.toLocaleString();
 });
 
-env.addFilter('formatOrdinal', function(n) {
+nunjucksEnv.addFilter('formatOrdinal', function(n) {
   var ord = "";
   if (n == 1) {
     ord = "st";
@@ -221,10 +221,12 @@ env.addFilter('formatOrdinal', function(n) {
   return n+ord;
 });
 
-env.express(app);
+nunjucksEnv.express(app);
 
-app.listen(8000, function() {
-  console.log('App running on port 8000!');
+var port = process.env.PORT || 8080;
+
+app.listen(port, function() {
+  console.log('App running on port '+port);
   console.log('srcPath is: '+srcPath);
   console.log('destPath is: '+destPath);
 });
