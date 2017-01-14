@@ -36,12 +36,24 @@ app.use(
 // The static middleware must come after the sass middleware
 app.use(express.static( path.join( __dirname, 'public' ) ) );
 
-var secret = require("./secret.json");
+var env = process.env.NODE_ENV || 'development'
+
+if (env == 'production') {
+  var consumer_key = process.env.CONSUMER_KEY,
+      consumer_secret = process.env.CONSUMER_SECRET,
+      bearer_token = process.env.BEARER_TOKEN;
+} else {
+  var secret = require("./secret.json");
+
+  var consumer_key = secret.twitter.consumerKey,
+      consumer_secret = secret.twitter.consumerSecret,
+      bearer_token = secret.twitter.bearerToken;
+}
 
 var twitter = new twitterAPI({
-    consumer_key:    secret.twitter.consumerKey,
-    consumer_secret: secret.twitter.consumerSecret,
-    bearer_token:    secret.twitter.bearerToken
+    consumer_key:    consumer_key,
+    consumer_secret: consumer_secret,
+    bearer_token:    bearer_token
 });
 
 app.get("/", function(req, res) {
