@@ -1,20 +1,22 @@
 {% extends "layout.html" %}
 
-{% block title %}{{user.name}}'s Twitter Milestone{% endblock %}
+{% block title %}{{user.name}}'s Tweet Milestone{% endblock %}
 
-{% block page_header %}
-<h1>{{ user.name }}</h1>
-<h2>@{{ user.screen_name }}</h2>
+{% block header_content %}
+  <div class="milestone-header">
+    <h1>{{ user.name }}’s Tweet Milestone</h1>
+  </div>
+
+  <div class="milestone">
+    <span>{{ tweetDifference | formatNumber }}</span>
+    tweets to reach your {{ nextMilestone | formatNumber }} tweet milestone
+  </div>
 {% endblock %}
 
 {% block content %}
-  <p>You have been on Twitter for {{ age }}</p>
+  <p>Your {{ (ageYears + 1) | formatOrdinal }} anniversary is in {{ nextAnniversary | formatNumber }}.</p>
 
-  <p>You've tweeted {{ tweetCount }} times. An average of {{ averageTweets }} tweets a day</p>
+  <p>You will need to tweet at least {{ tweetTimes | formatNumber }} times a day to reach your milestone by then.</p>
 
-  <p>Your next anniversary is in {{ nextAnniversary }}</p>
-
-  <p>Your next tweet milestone is {{ nextMilestone }} tweets which is {{ tweetDifference }} tweets away</p>
-
-  <p>You will need to tweet at least {{ tweetTimes }} times a day to reach it by your next anniversary</p>
+  <p>You've tweeted {{ tweetCount | formatNumber }} times. An average of {{ averageTweets | formatNumber }} tweets a day.</p>
 {% endblock %}

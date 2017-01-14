@@ -82,6 +82,7 @@ app.get('/info(/:username)?', function(req, res) {
 
       var age = getDateDifference(now, date_created);
       var ageDays = now.diff(date_created, 'days');
+      var ageYears = now.diff(date_created, 'years');
       var nextAnniversary = getNextOccurance(date_created);
       var nextAnniversaryString = getDateDifference(now, nextAnniversary);
       var anniversaryDays = Math.abs(now.diff(nextAnniversary, 'days'));
@@ -96,6 +97,7 @@ app.get('/info(/:username)?', function(req, res) {
       var data = {
         user: user,
         age: age,
+        ageYears: ageYears,
         nextAnniversary: nextAnniversaryString,
         tweetCount: tweetCount,
         averageTweets: averageTweets,
@@ -196,6 +198,29 @@ var getNextMilestone = function(n, y=0) {
 
   return z;
 }
+
+var env = new nunjucks.Environment();
+
+env.addFilter('formatNumber', function(n) {
+  return n.toLocaleString();
+});
+
+env.addFilter('formatOrdinal', function(n) {
+  var ord = "";
+  if (n == 1) {
+    ord = "st";
+  } else if (n == 2) {
+    ord = "nd";
+  } else if (n == 3) {
+    ord = "rd";
+  } else {
+    ord = "th";
+  }
+
+  return n+ord;
+});
+
+env.express(app);
 
 app.listen(8000, function() {
   console.log('App running on port 8000!');

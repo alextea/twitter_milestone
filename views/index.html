@@ -1,19 +1,23 @@
 {% extends "layout.html" %}
 
-{% block title %}Twitter Milestone{% endblock %}
+{% block title %}Tweet Milestone{% endblock %}
 
-{% block page_header %}
-<h1>Twitter Milestone</h1>
+{% block header_content %}
+<h1>Tweet Milestone</h1>
+
+<p>Discover your next Tweet Milestone and how often you’ll need to tweet to reach it by your next anniversary.</p>
 {% endblock %}
 
 {% block content %}
+<p>Enter your Twitter username below to find out when your next Tweet Milestone is.</p>
+
 <form class="" action="/info" method="get" id="form-get-info">
   <label for="input-username">
     Twitter username
     <input type="text" name="username" value="" id="input-username">
   </label>
 
-  <button type="submit">Get countdown</button>
+  <button type="submit">Get milestone</button>
 </form>
 {% endblock %}
 
