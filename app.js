@@ -29,7 +29,6 @@ app.use(
   sass({
     src: srcPath,
     dest: destPath,
-    debug: true,
     prefix: '/css'
   })
 );
