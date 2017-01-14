@@ -1,9 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var logger = require('express-logger');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var inspect = require('util-inspect');
 var twitterAPI = require('twitter');
 var nunjucks = require('nunjucks');
 var moment = require('moment');
@@ -23,13 +20,6 @@ nunjucks.configure(__dirname + '/views/', {
 app.set('view engine', 'nunjucks');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(logger({ path: "log/express.log"}));
-app.use(cookieParser());
-app.use(session({ secret: Math.round(Math.random() * 100000).toString(), resave: false, saveUninitialized: true}));
-app.use(function(req, res, next) {
-  res.locals.session = req.session;
-  next();
-});
 
 var srcPath = __dirname + '/sass';
 var destPath = __dirname + '/public/css';
